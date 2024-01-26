@@ -78,6 +78,7 @@ def load_model(model_name, loader=None):
     }
 
     metadata = get_model_metadata(model_name)
+    print(shared.args.loader)
     if loader is None:
         if shared.args.loader is not None:
             loader = shared.args.loader
