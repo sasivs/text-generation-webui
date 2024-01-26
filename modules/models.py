@@ -74,6 +74,7 @@ def load_model(model_name, loader=None):
         'AutoAWQ': AutoAWQ_loader,
         'QuIP#': QuipSharp_loader,
         'HQQ': HQQ_loader,
+        'Peft': peft_loader,
     }
 
     metadata = get_model_metadata(model_name)
@@ -440,6 +441,21 @@ def RWKV_loader(model_name):
     tokenizer = RWKVTokenizer.from_pretrained(Path(shared.args.model_dir))
     return model, tokenizer
 
+
+def peft_loader(model_name, parent_model_name):
+    '''
+        This loder is based for adapter models 
+    '''
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    from peft import PeftModel, PeftConfig
+
+    parent_model = AutoModelForCausalLM.from_pretrained(Path(f'{shared.args.model_dir}/{parent_model_name}'), load_in_8bit=True)
+
+    tokenizer = AutoTokenizer.from_pretrained(Path(f'{shared.args.model_dir}/{parent_model_name}'))
+
+    model = PeftModel.from_pretrained(parent_model, Path(f'{shared.args.model_dir}/{model_name}'))
+
+    return model, tokenizer
 
 def get_max_memory_dict():
     max_memory = {}
